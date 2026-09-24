@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge, risk_badges with context %}
+
+{% block title %}Claim {{ claim.id }} · TruthLens{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+  <a class="back-link" href="{{ url_for('public_feed_page') }}">← Back to public feed</a>
+  {% if just_submitted %}
+  <div class="notice notice-success" role="status">
+    <span class="notice-icon" aria-hidden="true">✓</span>
+    <p>Claim submitted. It is now visible in the public feed.</p>
+  </div>
+  {% endif %}
+  <section class="detail-heading">
+    <div>
+      <p class="eyebrow">TRUTHLENS CLAIM DETAIL <span class="detail-id">· #{{ claim.id }}</span></p>
+      <h1>Claim record</h1>
+    </div>
+    {{ status_badge(claim.status) }}
+  </section>
+
+  {% if claim.status == 'unverified' %}
+  <div class="unverified-banner">
+    <span class="banner-icon" aria-hidden="true">!</span>
+    <div><strong>UNVERIFIED</strong><p>This claim has not yet been reviewed.</p></div>
+    <a href="{{ url_for('review_queue_page') }}">Open review queue <span aria-hidden="true">→</span></a>
+  </div>
+  {% endif %}
+
+  <section class="detail-panel" aria-labelledby="metadata-heading">
+    <div class="panel-heading">
+      <div><p class="eyebrow">RECORD METADATA</p><h2 id="metadata-heading">Claim overview</h2></div>
+      {{ risk_badges(claim) }}
+    </div>
+    <dl class="detail-meta-grid">
+      <div><dt>Category</dt><dd>{{ claim.category }}</dd></div>
+      <div><dt>Source platform</dt><dd>{{ claim.source_platform }}</dd></div>
+      <div><dt>Submission time</dt><dd><time datetime="{{ claim.created_at }}">{{ claim.created_at|submitted_at }}</time></dd></div>
+      <div><dt>Source URL</dt><dd>{% if claim.source_url %}<a href="{{ claim.source_url }}" target="_blank" rel="noopener noreferrer">{{ claim.source_url }} <span aria-hidden="true">↗</span></a>{% else %}<span class="muted-value">No source URL provided</span>{% endif %}</dd></div>
+    </dl>
+  </section>
+
+  <section class="original-claim-panel" aria-labelledby="original-claim-heading">
+    <div class="original-claim-label"><span class="original-lock" aria-hidden="true">▣</span><div><p class="eyebrow">PRESERVED SUBMISSION</p><h2 id="original-claim-heading">ORIGINAL SUBMITTED CLAIM</h2></div></div>
+    <p class="original-claim-text">{{ claim.claim_text }}</p>
+    <p class="immutable-caption">Original wording is preserved. Review context appears separately below.</p>
+  </section>
+
+  <section class="review-note-panel" aria-labelledby="review-note-heading">
+    <div class="panel-heading note-heading">
+      <div><p class="eyebrow">REVIEW CONTEXT</p><h2 id="review-note-heading">REVIEWER NOTE</h2></div>
+      {{ status_badge(claim.status) }}
+    </div>
+    {% if claim.reviewer_note %}
+    <p class="review-note-text">{{ claim.reviewer_note }}</p>
+    {% else %}
+    <p class="empty-note">No reviewer note has been added.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

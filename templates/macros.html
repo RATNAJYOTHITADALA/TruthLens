@@ -1,0 +1,11 @@
+{% macro status_badge(status) -%}
+  <span class="badge status-badge status-{{ status|replace('_', '-') }}">{{ status_labels[status] }}</span>
+{%- endmacro %}
+
+{% macro risk_badges(claim) -%}
+  <div class="risk-badges" aria-label="Automatic risk indicators">
+    {% if claim.high_risk %}<span class="badge high-risk-badge">HIGH RISK</span>{% endif %}
+    {% for flag in claim.risk_flags %}<span class="badge risk-badge">{{ risk_labels[flag] }}</span>{% endfor %}
+    {% if not claim.risk_flags %}<span class="badge neutral-badge">NO FLAGS DETECTED</span>{% endif %}
+  </div>
+{%- endmacro %}

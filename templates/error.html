@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} · TruthLens{% endblock %}
+
+{% block content %}
+<section class="empty-state error-state">
+  <span class="error-code">{{ "%03d"|format(status_code) }}</span>
+  <p class="eyebrow">TRUTHLENS PUBLIC CLAIM DESK</p>
+  <h1>{{ title }}</h1>
+  <p>{{ message }}</p>
+  <a class="button button-primary" href="{{ url_for('public_feed_page') }}">Return to public feed</a>
+</section>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% from "macros.html" import risk_badges with context %}
+
+{% block title %}Review Queue · TruthLens{% endblock %}
+
+{% block content %}
+<section class="page-intro review-intro">
+  <div>
+    <p class="eyebrow">COMMUNITY REVIEW · OPEN QUEUE</p>
+    <h1>Review queue</h1>
+    <p class="intro-copy">Unverified claims are prioritized by risk signals and submission time. Review the source and add context before changing a status.</p>
+  </div>
+  <a class="button button-secondary intro-action" href="{{ url_for('public_feed_page') }}">Public feed <span aria-hidden="true">→</span></a>
+</section>
+
+<div id="review-success" class="notice notice-success" role="status" aria-live="polite" hidden></div>
+
+{% if claims %}
+<div class="review-list">
+  {% for claim in claims %}
+  <article class="review-card" id="review-card-{{ claim.id }}">
+    <div class="review-card-main">
+      <div class="review-card-top">
+        <span class="badge status-badge status-unverified">UNVERIFIED</span>
+        {{ risk_badges(claim) }}
+      </div>
+      <p class="unverified-message"><span aria-hidden="true">●</span> This claim has not yet been reviewed.</p>
+      <h2 class="review-claim-text">{{ claim.claim_text|truncate(240, true, "…") }}</h2>
+      <div class="claim-meta review-meta">
+        <span><span class="meta-label">CATEGORY</span>{{ claim.category }}</span>
+        <span><span class="meta-label">SOURCE PLATFORM</span>{{ claim.source_platform }}</span>
+        <span><span class="meta-label">SUBMITTED</span><time datetime="{{ claim.created_at }}">{{ claim.created_at|submitted_at }}</time></span>
+      </div>
+      <a class="text-link" href="{{ url_for('claim_detail_page', claim_id=claim.id) }}">Open claim <span aria-hidden="true">→</span></a>
+    </div>
+    <form class="review-form" data-review-form data-api-url="{{ url_for('review_claim_endpoint', claim_id=claim.id) }}" data-claim-id="{{ claim.id }}">
+      <h3>Record a review</h3>
+      <div class="form-field">
+        <label for="review-status-{{ claim.id }}">New status</label>
+        <select id="review-status-{{ claim.id }}" name="status" required>
+          {% for status in review_statuses %}
+          <option value="{{ status }}">{{ status_labels[status]|title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="review-note-{{ claim.id }}">Reviewer note <span class="optional-label">OPTIONAL</span></label>
+        <textarea id="review-note-{{ claim.id }}" name="reviewer_note" rows="3" placeholder="Add evidence or context for readers."></textarea>
+      </div>
+      <div class="review-error" data-review-error role="alert" aria-live="polite" hidden></div>
+      <button class="button button-primary" type="submit" data-review-button>Save Review</button>
+    </form>
+  </article>
+  {% endfor %}
+</div>
+<div class="empty-state compact-empty" id="review-empty-state" hidden>
+  <span class="empty-icon" aria-hidden="true">✓</span>
+  <h3>No claims are waiting for review.</h3>
+  <p>You have cleared the current queue.</p>
+</div>
+{% else %}
+<div class="empty-state">
+  <span class="empty-icon" aria-hidden="true">✓</span>
+  <h3>No claims are waiting for review.</h3>
+  <p>New submissions marked Unverified will appear here.</p>
+  <a class="button button-secondary" href="{{ url_for('public_feed_page') }}">Return to public feed</a>
+</div>
+{% endif %}
+{% endblock %}

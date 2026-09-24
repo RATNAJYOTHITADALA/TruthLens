@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% from "macros.html" import status_badge, risk_badges with context %}
+
+{% block title %}Public Feed · TruthLens{% endblock %}
+
+{% block content %}
+<section class="page-intro feed-intro">
+  <div>
+    <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> COMMUNITY TRIAGE · OPEN REVIEW</p>
+    <h1>Public claim desk</h1>
+    <p class="intro-copy">A clear view of claims circulating in the community, with signals that help people decide what to review first.</p>
+  </div>
+  <a class="button button-primary intro-action" href="{{ url_for('submit_page') }}">Submit a claim <span aria-hidden="true">→</span></a>
+</section>
+
+<section class="summary-grid" aria-label="Claim desk summary">
+  <article class="summary-card">
+    <span class="summary-label">TOTAL CLAIMS</span>
+    <strong class="summary-number">{{ summary.total_claims }}</strong>
+    <span class="summary-caption">Submitted to the public desk</span>
+  </article>
+  <article class="summary-card summary-card-risk">
+    <span class="summary-label">HIGH RISK</span>
+    <strong class="summary-number">{{ summary.high_risk }}</strong>
+    <span class="summary-caption">Two or more automatic risk flags</span>
+  </article>
+  <article class="summary-card summary-card-pending">
+    <span class="summary-label">UNVERIFIED</span>
+    <strong class="summary-number">{{ summary.unverified }}</strong>
+    <span class="summary-caption">Waiting for a reviewer</span>
+  </article>
+</section>
+
+<section class="feed-section" aria-labelledby="feed-heading">
+  <div class="section-heading-row">
+    <div>
+      <p class="eyebrow">PUBLIC RECORD</p>
+      <h2 id="feed-heading">Claims in circulation</h2>
+      <p class="section-subtitle">Priority is grouped by risk and review status, then by newest submission.</p>
+    </div>
+    <span class="result-count">{{ claims|length }} shown</span>
+  </div>
+
+  <form class="filter-bar" method="get" action="{{ url_for('public_feed_page') }}" aria-label="Filter claims">
+    <div class="filter-field">
+      <label for="category-filter">Category</label>
+      <select id="category-filter" name="category">
+        <option value="">All categories</option>
+        {% for category in categories %}
+        <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-field">
+      <label for="status-filter">Status</label>
+      <select id="status-filter" name="status">
+        <option value="">All statuses</option>
+        {% for status in statuses %}
+        <option value="{{ status }}" {% if selected_status == status %}selected{% endif %}>{{ status_labels[status]|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button class="button button-secondary filter-submit" type="submit">Apply filters</button>
+    {% if has_filters %}<a class="clear-filters" href="{{ url_for('public_feed_page') }}">Clear</a>{% endif %}
+  </form>
+
+  {% if claims %}
+  <div class="claim-list">
+    {% for claim in claims %}
+    <article class="claim-card {% if claim.status == 'unverified' %}claim-card-unverified{% endif %}">
+      <div class="claim-card-top">
+        {{ status_badge(claim.status) }}
+        {{ risk_badges(claim) }}
+      </div>
+      {% if claim.status == 'unverified' %}
+      <p class="unverified-message"><span aria-hidden="true">●</span> This claim has not yet been reviewed.</p>
+      {% endif %}
+      <h3 class="claim-card-text">{{ claim.claim_text|truncate(220, true, "…") }}</h3>
+      <div class="claim-meta" aria-label="Claim metadata">
+        <span><span class="meta-label">CATEGORY</span>{{ claim.category }}</span>
+        <span><span class="meta-label">SOURCE PLATFORM</span>{{ claim.source_platform }}</span>
+        <span><span class="meta-label">SUBMITTED</span><time datetime="{{ claim.created_at }}">{{ claim.created_at|submitted_at }}</time></span>
+      </div>
+      <div class="claim-card-actions">
+        <a class="button button-secondary" href="{{ url_for('claim_detail_page', claim_id=claim.id) }}">View details <span aria-hidden="true">→</span></a>
+        {% if claim.status == 'unverified' %}<span class="queue-hint">Open for community review</span>{% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% elif summary.total_claims == 0 %}
+  <div class="empty-state">
+    <span class="empty-icon" aria-hidden="true">＋</span>
+    <h3>No claims have been submitted yet.</h3>
+    <p>Start the public record by submitting a claim for triage.</p>
+    <a class="button button-primary" href="{{ url_for('submit_page') }}">Submit the first claim</a>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <span class="empty-icon" aria-hidden="true">⌕</span>
+    <h3>No claims match the selected filters.</h3>
+    <p>Try another category or status to see more of the public feed.</p>
+    <a class="button button-secondary" href="{{ url_for('public_feed_page') }}">Clear filters</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

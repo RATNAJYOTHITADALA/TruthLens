@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Submit a Claim · TruthLens{% endblock %}
+
+{% block content %}
+<div class="narrow-page">
+  <a class="back-link" href="{{ url_for('public_feed_page') }}">← Back to public feed</a>
+  <section class="page-intro compact-intro">
+    <div>
+      <p class="eyebrow">ADD TO THE PUBLIC RECORD</p>
+      <h1>Submit a claim</h1>
+      <p class="intro-copy">Share the claim as it appeared. TruthLens keeps the original wording intact and adds review context separately.</p>
+    </div>
+  </section>
+
+  <div class="notice notice-info">
+    <span class="notice-icon" aria-hidden="true">i</span>
+    <p>Automatic risk flags are triage signals. They do not determine whether a claim is true.</p>
+  </div>
+
+  <form id="claim-form" class="form-card" method="post" action="{{ url_for('submit_claim_page') }}" data-api-url="{{ url_for('create_claim_endpoint') }}">
+    <div class="form-heading">
+      <h2>Claim details</h2>
+      <p>Fields marked <span aria-hidden="true">*</span> are required. All submissions are public.</p>
+    </div>
+    <div class="form-field">
+      <label for="claim-text">Claim text <span class="required-mark" aria-hidden="true">*</span></label>
+      <textarea id="claim-text" name="claim_text" rows="7" required aria-describedby="claim-text-help claim-text-error">{{ form_values.get('claim_text', '') }}</textarea>
+      <span id="claim-text-help" class="field-help">Enter the full wording you saw. Original text cannot be edited after submission.</span>
+      <span id="claim-text-error" class="field-error" data-field-error="claim_text">{{ errors.get('claim_text', '') }}</span>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="source-platform">Source platform <span class="required-mark" aria-hidden="true">*</span></label>
+        <select id="source-platform" name="source_platform" required aria-describedby="source-platform-error">
+          <option value="">Choose a platform</option>
+          {% for platform in platforms %}
+          <option value="{{ platform }}" {% if form_values.get('source_platform') == platform %}selected{% endif %}>{{ platform }}</option>
+          {% endfor %}
+        </select>
+        <span id="source-platform-error" class="field-error" data-field-error="source_platform">{{ errors.get('source_platform', '') }}</span>
+      </div>
+      <div class="form-field">
+        <label for="category">Category <span class="required-mark" aria-hidden="true">*</span></label>
+        <select id="category" name="category" required aria-describedby="category-error">
+          <option value="">Choose a category</option>
+          {% for category in categories %}
+          <option value="{{ category }}" {% if form_values.get('category') == category %}selected{% endif %}>{{ category }}</option>
+          {% endfor %}
+        </select>
+        <span id="category-error" class="field-error" data-field-error="category">{{ errors.get('category', '') }}</span>
+      </div>
+    </div>
+    <div class="form-field">
+      <label for="source-url">Source URL <span class="optional-label">OPTIONAL</span></label>
+      <input id="source-url" name="source_url" type="url" inputmode="url" placeholder="https://example.com/story" value="{{ form_values.get('source_url', '') }}" aria-describedby="source-url-help source-url-error">
+      <span id="source-url-help" class="field-help">A link helps reviewers find the original context. HTTP and HTTPS links are accepted.</span>
+      <span id="source-url-error" class="field-error" data-field-error="source_url">{{ errors.get('source_url', '') }}</span>
+    </div>
+    <div class="form-feedback" data-form-feedback role="alert" aria-live="polite" {% if not errors %}hidden{% endif %}>
+      {% if errors %}Please correct the highlighted fields and try again.{% endif %}
+    </div>
+    <div class="form-actions">
+      <button class="button button-primary button-large" type="submit" data-submit-button>Analyze &amp; Submit <span aria-hidden="true">→</span></button>
+      <span class="form-footnote">Risk flags are calculated by the server.</span>
+    </div>
+  </form>
+</div>
+{% endblock %}

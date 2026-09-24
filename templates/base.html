@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7fb">
+  <title>{% block title %}TruthLens · Public Claim Desk{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{{ url_for('public_feed_page') }}" aria-label="TruthLens public feed">
+        <span class="brand-mark" aria-hidden="true">T</span>
+        <span class="brand-name">TRUTHLENS</span>
+      </a>
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="{{ url_for('public_feed_page') }}" {% if request.endpoint == 'public_feed_page' %}aria-current="page"{% endif %}>Public Feed</a>
+        <a href="{{ url_for('review_queue_page') }}" {% if request.endpoint == 'review_queue_page' %}aria-current="page"{% endif %}>Review Queue</a>
+        <a class="nav-submit" href="{{ url_for('submit_page') }}" {% if request.endpoint in ('submit_page', 'submit_claim_page') %}aria-current="page"{% endif %}>Submit Claim <span aria-hidden="true">＋</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="page-shell">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>TruthLens <span class="footer-separator">/</span> Public claim desk</span>
+      <span>Risk signals help prioritize review; they are not fact-checks.</span>
+    </div>
+  </footer>
+</body>
+</html>
