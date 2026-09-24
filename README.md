@@ -2,7 +2,7 @@
 
 **Track:** Track 2 — Real-World AI Products  
 **Hackathon ID:** AZIS-D2USKN  
-**Live URL:** [To be added after deployment]
+**Live URL:** [https://truthlens-a1u8.onrender.com](https://truthlens-a1u8.onrender.com)
 
 TruthLens is a public misinformation-triage application. It helps readers and reviewers organize submitted claims, notice simple risk signals, and make review status and context visible. Risk flags are triage signals; they do not determine whether a claim is true.
 
@@ -75,4 +75,4 @@ Claim statuses are `unverified`, `verified_true`, `verified_false`, and `mislead
 
 TruthLens has not been deployed yet. For a public deployment, use a Python host with a persistent disk or volume: SQLite stores data in a file, so an ephemeral filesystem may lose claims during restarts or redeployments. Configure the application entry point as `app:app`, install the requirements, run it with a production WSGI server, and set `TRUTHLENS_DATABASE` to a database file on the persistent volume. A production WSGI server is not currently listed in `requirements.txt` and must be supplied by the deployment configuration.
 
-**Live URL:** [To be added after deployment]
+**Live URL:** [https://truthlens-a1u8.onrender.com](https://truthlens-a1u8.onrender.com)
